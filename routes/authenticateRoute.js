@@ -3,6 +3,7 @@ const app = express()
 const router = express.Router()
 const jwt = require('jsonwebtoken')
 const User = require('../models/User')
+const config = require('../config')
 
 router.post('/register', function (req, res) {
   const name = req.body.name
@@ -10,7 +11,7 @@ router.post('/register', function (req, res) {
   const username = req.body.username
   const password = req.body.password
 
-  const user = new User({})
+  const user = new User()
   user.name = name
   user.email = email
   user.username = username
@@ -44,6 +45,8 @@ router.post('/register', function (req, res) {
     }
   })
 })
+
+app.set('superSecret', config.secret)
 
 router.post('/authenticate', function (req, res) {
   User.findOne({

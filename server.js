@@ -9,6 +9,7 @@ const config = require('./config')
 const authenticateRoute = require('./routes/authenticateRoute')
 const applyMiddleware = require('./routes/applyMiddleware')
 const userRoutes = require('./routes/userRoutes')
+const recipeRoute = require('./routes/recipeRoute')
 
 const mongoose = require('mongoose')
 mongoose.Promise = require('bluebird')
@@ -27,9 +28,10 @@ app.get('/', function (req, res) {
 })
 
 app.use('/api', userRoutes)
+app.use(recipeRoute)
 app.use('/api', authenticateRoute)
 // app.use('/api', registrationRoute)
-app.use('/api', applyMiddleware)
+// app.use('/api', applyMiddleware)
 
 app.listen(port)
 console.log('Whats for dinner starting at http://localhost:' + port)
