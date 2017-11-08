@@ -3,7 +3,7 @@
 This API connects with the What's For Dinner? front end and allows users to register and login to the website.  This API was built with Node.js and Express.
 
 ## Screenshot
-![homepage](/images/api-sceenshot.png)
+![homepage](/images/api-screenshot.png)
 
 ## Installation
 
