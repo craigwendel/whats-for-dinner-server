@@ -3,9 +3,47 @@ const app = express()
 const router = express.Router()
 const jwt = require('jsonwebtoken')
 const User = require('../models/User')
-const config = require('../config')
 
-app.set('superSecret', config.secret)
+router.post('/register', function (req, res) {
+  const name = req.body.name
+  const email = req.body.email
+  const username = req.body.username
+  const password = req.body.password
+
+  const user = new User({})
+  user.name = name
+  user.email = email
+  user.username = username
+  user.password = password
+  user.save()
+  .then(user => {
+    res.status(201).json({
+      status: 'success',
+      username: user.username,
+      password: user.password
+    })
+  })
+  .catch((e) => {
+    console.log(e)
+
+    if (e.code === 11000) {
+      res.status(422).json({
+        errors: ['The username already exists']
+      })
+    } else {
+      let errors = []
+      if (e.errors.username) {
+        errors.push('Username is required')
+      }
+      if (e.errors.password) {
+        errors.push('There was a problem with your password')
+      }
+      res.status(422).json({
+        errors: errors
+      })
+    }
+  })
+})
 
 router.post('/authenticate', function (req, res) {
   User.findOne({
@@ -34,4 +72,4 @@ router.post('/authenticate', function (req, res) {
 
 module.exports = router
 
-// "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyIkX18iOnsic3RyaWN0TW9kZSI6dHJ1ZSwic2VsZWN0ZWQiOnt9LCJnZXR0ZXJzIjp7fSwid2FzUG9wdWxhdGVkIjpmYWxzZSwiYWN0aXZlUGF0aHMiOnsicGF0aHMiOnsicGFzc3dvcmQiOiJpbml0IiwidXNlcm5hbWUiOiJpbml0IiwiZW1haWwiOiJpbml0IiwibmFtZSI6ImluaXQiLCJfX3YiOiJpbml0IiwiX2lkIjoiaW5pdCJ9LCJzdGF0ZXMiOnsiaWdub3JlIjp7fSwiZGVmYXVsdCI6e30sImluaXQiOnsiX192Ijp0cnVlLCJwYXNzd29yZCI6dHJ1ZSwidXNlcm5hbWUiOnRydWUsImVtYWlsIjp0cnVlLCJuYW1lIjp0cnVlLCJfaWQiOnRydWV9LCJtb2RpZnkiOnt9LCJyZXF1aXJlIjp7fX0sInN0YXRlTmFtZXMiOlsicmVxdWlyZSIsIm1vZGlmeSIsImluaXQiLCJkZWZhdWx0IiwiaWdub3JlIl19LCJwYXRoc1RvU2NvcGVzIjp7fSwiZW1pdHRlciI6eyJkb21haW4iOm51bGwsIl9ldmVudHMiOnt9LCJfZXZlbnRzQ291bnQiOjAsIl9tYXhMaXN0ZW5lcnMiOjB9fSwiaXNOZXciOmZhbHNlLCJfZG9jIjp7Il9fdiI6MCwicGFzc3dvcmQiOiIkMmEkMTAkYjg4SDVWR1JWa3pqdS5vZUpGV29qLlhpYjhNLy5wVzQxLmNCZ0dZNWR3emVxNUVHSEREZHEiLCJ1c2VybmFtZSI6ImNyYWlnd2VuZGVsIiwiZW1haWwiOiJ3ZW5kZWxjcmFpZ0BnbWFpbC5jb20iLCJuYW1lIjoiQ3JhaWcgV2VuZGVsIiwiX2lkIjoiNTk5ZjM1NjYxODI4ZmYwNzcyMjE0MTFkIn0sIiRpbml0Ijp0cnVlLCJpYXQiOjE1MDM2MDgyOTIsImV4cCI6MTUwNDgxNzg5Mn0.atmsNFzitvsqACqJ9HLMcEw-_PiICjcv_Xx6m5I7qLE"
+// "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyIkX18iOnsic3RyaWN0TW9kZSI6dHJ1ZSwic2VsZWN0ZWQiOnt9LCJnZXR0ZXJzIjp7fSwid2FzUG9wdWxhdGVkIjpmYWxzZSwiYWN0aXZlUGF0aHMiOnsicGF0aHMiOnsicGFzc3dvcmQiOiJpbml0IiwidXNlcm5hbWUiOiJpbml0IiwiZW1haWwiOiJpbml0IiwibmFtZSI6ImluaXQiLCJfX3YiOiJpbml0IiwiX2lkIjoiaW5pdCJ9LCJzdGF0ZXMiOnsiaWdub3JlIjp7fSwiZGVmYXVsdCI6e30sImluaXQiOnsiX192Ijp0cnVlLCJwYXNzd29yZCI6dHJ1ZSwidXNlcm5hbWUiOnRydWUsImVtYWlsIjp0cnVlLCJuYW1lIjp0cnVlLCJfaWQiOnRydWV9LCJtb2RpZnkiOnt9LCJyZXF1aXJlIjp7fX0sInN0YXRlTmFtZXMiOlsicmVxdWlyZSIsIm1vZGlmeSIsImluaXQiLCJkZWZhdWx0IiwiaWdub3JlIl19LCJwYXRoc1RvU2NvcGVzIjp7fSwiZW1pdHRlciI6eyJkb21haW4iOm51bGwsIl9ldmVudHMiOnt9LCJfZXZlbnRzQ291bnQiOjAsIl9tYXhMaXN0ZW5lcnMiOjB9fSwiaXNOZXciOmZhbHNlLCJfZG9jIjp7Il9fdiI6MCwicGFzc3dvcmQiOiJpcm9ueWFyZCIsInVzZXJuYW1lIjoiY3JhaWd3ZW5kZWwiLCJlbWFpbCI6IndlbmRlbGNyYWlnQGdtYWlsLmNvbSIsIm5hbWUiOiJDcmFpZyBXZW5kZWwiLCJfaWQiOiI1OWEwODRlNzhhZGE5NjEyOTE2ODVhZjQifSwiJGluaXQiOnRydWUsImlhdCI6MTUwMzY5MjI5NCwiZXhwIjoxNTA0OTAxODk0fQ.xzXo0ik_o74W8afj6CQ-lEd5zvh7H1bwEb4hashHiuU"
