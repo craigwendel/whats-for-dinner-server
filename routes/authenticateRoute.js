@@ -4,18 +4,19 @@ const router = express.Router()
 const jwt = require('jsonwebtoken')
 const User = require('../models/User')
 const config = require('../config')
+const passwordHash = require('password-hash')
 
 router.post('/register', function (req, res) {
   const name = req.body.name
   const email = req.body.email
   const username = req.body.username
-  const password = req.body.password
+  const hashedPassword = passwordHash.generate(req.body.password)
 
   const user = new User()
   user.name = name
   user.email = email
   user.username = username
-  user.password = password
+  user.password = hashedPassword
   user.save()
   .then(user => {
     res.status(201).json({
